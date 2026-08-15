@@ -1,0 +1,54 @@
+---
+import BrandMark from './BrandMark.astro';
+import Pagefind from 'astro-pagefind/components/Search.astro';
+import { withBase } from '../lib/url';
+---
+
+<header class="sticky top-0 z-40 border-b border-border bg-ink/90 backdrop-blur">
+  <div class="mx-auto flex max-w-6xl items-center gap-4 px-4 py-4 sm:px-6">
+    <a href={withBase('/')} class="flex shrink-0 items-center gap-3 text-cream">
+      <BrandMark class="h-5 w-auto text-coral" />
+      <span class="text-base font-semibold">moku pona</span>
+    </a>
+
+    <nav class="ml-2 hidden items-center gap-6 text-sm text-cream-muted sm:flex">
+      <a href={withBase('/dinners')} class="transition-colors hover:text-coral">dinners</a>
+      <a href={withBase('/recipes')} class="transition-colors hover:text-coral">recipes</a>
+    </nav>
+
+    <div class="ml-auto flex items-center gap-4">
+      <div class="pagefind-header-search w-40 sm:w-64">
+        <Pagefind className="pagefind-header-box" />
+      </div>
+      <nav class="flex items-center gap-4 text-sm text-cream-muted sm:hidden">
+        <a href={withBase('/dinners')} class="transition-colors hover:text-coral">dinners</a>
+        <a href={withBase('/recipes')} class="transition-colors hover:text-coral">recipes</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<style is:global>
+  .pagefind-header-search .pf-searchbox-input-wrapper {
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+  }
+  .pagefind-header-search .pf-searchbox-input {
+    padding: 0.4rem 0.9rem;
+    font-size: 0.875rem;
+    border-radius: 8px;
+    color: var(--color-cream);
+  }
+  .pagefind-header-search .pf-searchbox-input::placeholder {
+    color: var(--color-cream-faint);
+  }
+  .pagefind-header-search .pf-searchbox-dropdown {
+    max-height: 70vh;
+    overflow-y: auto;
+    border-radius: 12px;
+    box-shadow: 0 12px 32px rgb(0 0 0 / 45%);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+  }
+</style>

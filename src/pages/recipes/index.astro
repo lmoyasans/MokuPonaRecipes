@@ -1,0 +1,101 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import RecipeCard from '../../components/RecipeCard.astro';
+
+const recipes = (await getCollection('recipes')).sort((a, b) => a.data.title.localeCompare(b.data.title));
+const dinners = await getCollection('dinners');
+const dinnerTitleById = new Map(dinners.map((d) => [d.id, d.data.title]));
+
+const allTags = [...new Set(recipes.flatMap((r) => r.data.tags))].sort();
+---
+
+<BaseLayout title="Recipes" description="Every recipe cooked at a moku pona dinner, searchable and filterable by tag.">
+  <section class="mx-auto max-w-6xl px-4 py-14 sm:px-6">
+    <span class="block text-xs font-semibold uppercase tracking-widest text-coral">the cookbook</span>
+    <h1 class="mt-3 text-4xl font-light text-cream">recipes</h1>
+    <p class="mt-3 max-w-xl text-cream-muted">
+      {recipes.length} recipe{recipes.length === 1 ? '' : 's'} and counting. filter by tag, or use search up top to find anything by name or ingredient.
+    </p>
+
+    {
+      allTags.length > 0 && (
+        <div id="tag-filters" class="mt-8 flex flex-wrap gap-2">
+          <button
+            type="button"
+            data-tag-filter="all"
+            class="tag-filter-btn is-active rounded-lg border border-border px-3.5 py-1.5 text-sm transition-colors"
+          >
+            all
+          </button>
+          {allTags.map((tag) => (
+            <button
+              type="button"
+              data-tag-filter={tag}
+              class="tag-filter-btn rounded-lg border border-border px-3.5 py-1.5 text-sm transition-colors"
+            >
+              {tag}
+            </button>
+          ))}
+        </div>
+      )
+    }
+
+    <div id="recipe-grid" class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        recipes.map((recipe) => (
+          <RecipeCard
+            recipe={recipe}
+            dinnerTitle={recipe.data.dinner ? dinnerTitleById.get(recipe.data.dinner.id) : undefined}
+          />
+        ))
+      }
+    </div>
+
+    <p id="no-results" class="mt-10 hidden text-cream-faint">no recipes match that tag yet.</p>
+
+    {
+      recipes.length === 0 && (
+        <p class="mt-10 text-cream-faint">no recipes yet — add one in src/content/recipes.</p>
+      )
+    }
+  </section>
+</BaseLayout>
+
+<style>
+  .tag-filter-btn {
+    color: var(--color-cream-muted);
+    background: transparent;
+  }
+  .tag-filter-btn.is-active {
+    background: var(--color-coral);
+    color: var(--color-ink);
+    border-color: var(--color-coral);
+    font-weight: 600;
+  }
+</style>
+
+<script>
+  const buttons = document.querySelectorAll<HTMLButtonElement>('.tag-filter-btn');
+  const cards = document.querySelectorAll<HTMLAnchorElement>('#recipe-grid > a');
+  const noResults = document.getElementById('no-results');
+
+  buttons.forEach((button) => {
+    button.addEventListener('click', () => {
+      buttons.forEach((b) => b.classList.remove('is-active'));
+      button.classList.add('is-active');
+
+      const tag = button.dataset.tagFilter;
+      let visibleCount = 0;
+
+      cards.forEach((card) => {
+        const cardTags = (card.dataset.tags ?? '').split(',');
+        const visible = tag === 'all' || cardTags.includes(tag ?? '');
+        card.classList.toggle('hidden', !visible);
+        if (visible) visibleCount++;
+      });
+
+      noResults?.classList.toggle('hidden', visibleCount !== 0);
+    });
+  });
+</script>

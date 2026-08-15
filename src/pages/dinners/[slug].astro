@@ -1,0 +1,63 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import RecipeCard from '../../components/RecipeCard.astro';
+import Icon from '../../components/Icon.astro';
+import { withBase } from '../../lib/url';
+
+export async function getStaticPaths() {
+  const dinners = await getCollection('dinners');
+  return dinners.map((dinner) => ({
+    params: { slug: dinner.id },
+    props: { dinner },
+  }));
+}
+
+const { dinner } = Astro.props;
+const { title, date, theme, description } = dinner.data;
+
+const allRecipes = await getCollection('recipes');
+const recipes = allRecipes.filter((r) => r.data.dinner?.id === dinner.id);
+
+const formattedDate = date.toLocaleDateString('en-GB', {
+  weekday: 'long',
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+});
+---
+
+<BaseLayout title={title} description={theme ?? description}>
+  <section class="mx-auto max-w-4xl px-4 py-14 sm:px-6">
+    <a href={withBase('/dinners')} class="inline-flex items-center gap-1 text-sm text-cream-faint hover:text-coral">
+      <Icon name="arrow-right" class="h-3.5 w-3.5 rotate-180" /> all dinners
+    </a>
+
+    <p class="mt-6 text-xs font-semibold uppercase tracking-widest text-coral">{formattedDate}</p>
+    <h1 class="mt-2 text-4xl font-light text-cream sm:text-5xl">{title}</h1>
+    {theme && <p class="mt-3 text-lg text-cream-muted">{theme}</p>}
+
+    <div class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-cream-faint">
+      <span class="inline-flex items-center gap-1.5">
+        <Icon name="bowl" class="h-4 w-4" /> {recipes.length} recipe{recipes.length === 1 ? '' : 's'}
+      </span>
+    </div>
+
+    {description && <p class="mt-6 max-w-2xl leading-relaxed text-cream-muted">{description}</p>}
+  </section>
+
+  <section class="mx-auto max-w-6xl px-4 pb-24 sm:px-6">
+    <h2 class="mb-6 text-2xl font-light text-cream">what we ate</h2>
+    {
+      recipes.length > 0 ? (
+        <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {recipes.map((recipe) => (
+            <RecipeCard recipe={recipe} />
+          ))}
+        </div>
+      ) : (
+        <p class="text-cream-faint">no recipes linked to this dinner yet.</p>
+      )
+    }
+  </section>
+</BaseLayout>

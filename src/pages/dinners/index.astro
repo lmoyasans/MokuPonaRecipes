@@ -1,0 +1,41 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import DinnerCard from '../../components/DinnerCard.astro';
+
+const dinners = (await getCollection('dinners')).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+const recipes = await getCollection('recipes');
+
+const recipeCountByDinner = new Map<string, number>();
+for (const recipe of recipes) {
+  const dinnerId = recipe.data.dinner?.id;
+  if (!dinnerId) continue;
+  recipeCountByDinner.set(dinnerId, (recipeCountByDinner.get(dinnerId) ?? 0) + 1);
+}
+---
+
+<BaseLayout title="Dinners" description="Every moku pona dinner, past and upcoming.">
+  <section class="mx-auto max-w-4xl px-4 py-14 sm:px-6">
+    <span class="block text-xs font-semibold uppercase tracking-widest text-coral">gatherings</span>
+    <h1 class="mt-3 text-4xl font-light text-cream">dinners</h1>
+    <p class="mt-3 max-w-xl text-cream-muted">
+      every moku pona gathering we've documented, newest first.
+    </p>
+
+    <div class="mt-10 flex flex-col gap-4">
+      {
+        dinners.map((dinner) => (
+          <DinnerCard dinner={dinner} recipeCount={recipeCountByDinner.get(dinner.id) ?? 0} />
+        ))
+      }
+    </div>
+
+    {
+      dinners.length === 0 && (
+        <p class="mt-10 text-cream-faint">no dinners documented yet — add one in src/content/dinners.</p>
+      )
+    }
+  </section>
+</BaseLayout>

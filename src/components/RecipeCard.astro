@@ -1,0 +1,65 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Icon from './Icon.astro';
+import TagPill from './TagPill.astro';
+import { withBase } from '../lib/url';
+
+interface Props {
+  recipe: CollectionEntry<'recipes'>;
+  dinnerTitle?: string;
+}
+
+const { recipe, dinnerTitle } = Astro.props;
+const { title, image, difficulty, tags } = recipe.data;
+---
+
+<a
+  href={withBase(`/recipes/${recipe.id}/`)}
+  class="group flex flex-col overflow-hidden rounded-xl border border-border bg-surface transition-colors hover:border-coral/40"
+  data-tags={tags.join(',')}
+>
+  <div class="relative aspect-[3/2] w-full overflow-hidden bg-surface-raised">
+    {
+      image ? (
+        <img
+          src={withBase(image)}
+          alt={title}
+          class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          loading="lazy"
+        />
+      ) : (
+        <div class="flex h-full w-full items-center justify-center">
+          <Icon name="bowl" class="h-9 w-9 text-cream-faint" />
+        </div>
+      )
+    }
+    {
+      difficulty && (
+        <span class="absolute right-2 top-2 rounded-md bg-ink/80 px-2.5 py-1 text-[11px] text-cream-muted">
+          {difficulty}
+        </span>
+      )
+    }
+  </div>
+  <div class="flex flex-1 flex-col gap-2 p-4">
+    <h3 class="text-lg font-light leading-snug text-cream group-hover:text-coral">
+      {title}
+    </h3>
+    {
+      dinnerTitle && (
+        <span class="inline-flex items-center gap-1 text-sm text-cream-faint">
+          <Icon name="calendar" class="h-3.5 w-3.5" /> {dinnerTitle}
+        </span>
+      )
+    }
+    {
+      tags.length > 0 && (
+        <div class="mt-1 flex flex-wrap gap-1.5">
+          {tags.slice(0, 3).map((tag) => (
+            <TagPill tag={tag} />
+          ))}
+        </div>
+      )
+    }
+  </div>
+</a>

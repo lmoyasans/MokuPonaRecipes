@@ -1,0 +1,45 @@
+@import "tailwindcss";
+@import "@fontsource/open-sans/300.css";
+@import "@fontsource/open-sans/300-italic.css";
+@import "@fontsource/open-sans/400.css";
+@import "@fontsource/open-sans/600.css";
+@import "@fontsource/open-sans/700.css";
+
+@theme {
+  --font-sans: "Open Sans", ui-sans-serif, system-ui, sans-serif;
+
+  --color-ink: #15110e;
+  --color-surface: #1e1912;
+  --color-surface-raised: #241d15;
+  --color-border: rgb(245 241 236 / 12%);
+  --color-cream: #f5f1ec;
+  --color-cream-muted: rgb(245 241 236 / 70%);
+  --color-cream-faint: rgb(245 241 236 / 50%);
+  --color-coral: #ed825e;
+  --color-coral-dark: #d96c47;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-ink);
+  color: var(--color-cream);
+  font-family: var(--font-sans);
+  font-weight: 400;
+}
+
+/* Pagefind component-ui theming to match the site */
+:root {
+  --pf-text: #f5f1ec;
+  --pf-text-secondary: rgb(245 241 236 / 70%);
+  --pf-text-muted: rgb(245 241 236 / 50%);
+  --pf-background: #1e1912;
+  --pf-border: rgb(245 241 236 / 14%);
+  --pf-border-focus: #ed825e;
+  --pf-hover: #241d15;
+  --pf-mark: #ed825e;
+  --pf-font: "Open Sans", ui-sans-serif, system-ui, sans-serif;
+  --pf-border-radius: 0.5rem;
+}

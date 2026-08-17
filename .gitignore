@@ -22,3 +22,6 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# raw dinner source material (photos/docs, not the site content)
+dinnerInfo/
